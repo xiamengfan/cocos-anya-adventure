@@ -1,6 +1,6 @@
 import MainCtrl from "../../main";
 import BoardCtrl from "./board";
-import { STEP_NUM } from "../../utils/config";
+import { STEP_NUM, SCORE_NUM } from "../../utils/config";
 import { AnimationType } from "../../types";
 
 const { ccclass, property } = cc._decorator;
@@ -15,6 +15,15 @@ export default class GameCtrl extends cc.Component {
 
     @property(cc.Sprite)
     gameBg: cc.Sprite = null;
+
+    @property(cc.Prefab)
+    scorePrefab: cc.Prefab = null;
+
+    @property(cc.Node)
+    scoreRoot: cc.Node = null;
+
+    @property(cc.Node)
+    animationRoot: cc.Node = null;
 
     private _gameBgId = 0;
 
@@ -45,6 +54,26 @@ export default class GameCtrl extends cc.Component {
         return this._stepNum;
     }
 
+    @property(cc.Node)
+    scoreProgressBar: cc.Node = null;
+
+    totalScoreProgress = 103;
+
+    targetScore = SCORE_NUM;
+
+    private _currentScore = 0;
+
+    set currentScore(score: number) {
+        this._currentScore = score;
+        this.scoreProgressBar.height = score / this.targetScore * this.totalScoreProgress;
+    }
+
+    get currentScore() {
+        return this._currentScore;
+    }
+
+    actionCount = 0;
+
     board = [];
 
     get disabled() {
@@ -58,6 +87,7 @@ export default class GameCtrl extends cc.Component {
 
     initGame() {
         this.stepNum = STEP_NUM;
+        this.currentScore = 0;
         // this.initGameBg();
         this.boardCtrl.initGame(this.getIcons());
     }
@@ -71,6 +101,13 @@ export default class GameCtrl extends cc.Component {
             return;
         }
         this.mainCtrl.gameEnd();
+    }
+
+    gameWin() {
+        if (this.disabled) {
+            return;
+        }
+        this.mainCtrl.gameWin();
     }
 
     /**
@@ -106,8 +143,24 @@ export default class GameCtrl extends cc.Component {
         this.stepNum = num > 0 ? num : 0;
     }
 
+    startOneAction() {
+        this.actionCount++;
+    }
+
+    stopOneAction() { 
+        this.actionCount--;
+    }
+
     checkOver() {
+        if (this.currentScore >= this.targetScore) {
+              // win
+            if (this.actionCount <= 0) {
+                this.gameWin();
+            }
+            return;
+        }
         if (this.stepNum <= 0) {
+            // lose
             this.gameEnd();
         }
     }
@@ -140,5 +193,53 @@ export default class GameCtrl extends cc.Component {
         if (!this.boardCtrl.disabled) {
             this.boardCtrl.resetTable();
         }
+    }
+
+    /** score */
+
+    addScore() {
+        if (this.currentScore >= this.targetScore) {
+            this.checkOver();
+            return;
+        }
+        let score = this.currentScore + 1;
+        if (score >= this.targetScore) {
+            score = this.targetScore;
+        }
+        this.currentScore = score;
+        this.checkOver();
+    }
+
+    creatScore(worldPos: cc.Vec2, delay: number) {
+        this.startOneAction();
+        const scoreNode = cc.instantiate(this.scorePrefab);
+        scoreNode.parent = this.animationRoot;
+        const locationPos = this.animationRoot.convertToNodeSpaceAR(worldPos);
+        scoreNode.setPosition(locationPos);
+        const targetPos = this.scoreRoot.position;
+        const pos1 = cc.v2(scoreNode.x + (targetPos.x - scoreNode.x) * 1, scoreNode.y);
+        const pos2 = cc.v2(targetPos.x, targetPos.y - (targetPos.y - scoreNode.y) * 0.4);
+        const pos3 = cc.v2(targetPos.x, targetPos.y);
+        // const bezier = [pos1, pos2, pos3];
+        // scoreNode.runAction(
+        //     cc.sequence(
+        //         cc.delayTime(delay),
+        //         cc.bezierTo(0.8, bezier),
+        //         cc.callFunc(() => {
+        //             this.stopOneAction();
+        //             scoreNode.destroy();
+        //             this.addScore();
+        //         })
+        //     )
+        // );
+        cc.tween(scoreNode)
+            .delay(delay)
+            .bezierTo(0.8, pos1, pos2, pos3)
+            .call(() => {
+                this.stopOneAction();
+                scoreNode.destroy();
+                this.addScore();
+            })
+            .start();
     }
 }

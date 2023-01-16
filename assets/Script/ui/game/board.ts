@@ -40,6 +40,9 @@ export default class BoardCtrl extends cc.Component {
     // 当前状态
     state: CellState = 0;
 
+    // 待消除的棋子
+    clearColMap = new Map<number, number[]>();
+
     get active() {
         return this.activeCellCount > 0;
     }
@@ -180,17 +183,16 @@ export default class BoardCtrl extends cc.Component {
         if (this.state === CellState.Fall) {
             // 收集所有可消除的棋子，直接进行消除
             // 若不存在任何可直接或交换后消除的棋子，则重置游戏
-            const clearColMap = new Map<number, number[]>();
+            this.clearColMap.clear();
             const cellIdTable = this.cellIdTable;
             this.cellTable.forEach((item) => item.forEach((cell) => {
-                buildClearColMap(cell, cellIdTable, clearColMap);
+                buildClearColMap(cell, cellIdTable, this.clearColMap);
             }));
-            if (clearColMap.size) {
-                this.clear(clearColMap);
+            if (this.clearColMap.size) {
+                this.clear();
             } else if(!this.checkCanSwapAndClear()){
                 this.resetTable();
             }
-            this.gameCtrl.checkOver();
             return;
         }
         if (this.state === CellState.Swap && this.swapCells.length === 2 && this.moveState !== MoveState.None) {
@@ -199,16 +201,21 @@ export default class BoardCtrl extends cc.Component {
             // 判断交换完棋子后是否可消除，否则换回来
             // 按列进行消除
             const cellIdTable = this.cellIdTable;
-            const clearColMap = new Map<number, number[]>();
-            buildClearColMap(cell1, cellIdTable, clearColMap);
-            buildClearColMap(cell2, cellIdTable, clearColMap);
-            if (clearColMap.size) {
-                this.clear(clearColMap);
+            this.clearColMap.clear();
+            buildClearColMap(cell1, cellIdTable, this.clearColMap);
+            buildClearColMap(cell2, cellIdTable, this.clearColMap);
+            if (this.clearColMap.size) {
+                this.clear();
             } else {
                 this.swap(cell1, cell2);   
             }  
             this.swapCells.length = 0;
             this.moveState = MoveState.None;
+            return;
+        }
+        if (this.state === CellState.Clear) {
+            // 消除完成后进行新棋子的补充
+            this.supply();
             return;
         }
         this.state = CellState.Normal;
@@ -259,11 +266,31 @@ export default class BoardCtrl extends cc.Component {
     }
 
     /**
-     * 按列从下到上依次进行消除
+    * 消除棋子
+    * @param clearColMap 
+    */
+    clear(clearColMap: Map<number, number[]> = this.clearColMap) {
+        // console.log('clear');
+        this.state = CellState.Clear;
+        let delay = 0;
+        for (let cells of clearColMap.values()) {
+            for (let index of cells) {
+                const { row, col } = getRowAndCol(index);
+                const cell = this.cellTable[col][row];
+                cell.startClear();
+                const worldpos = cell.node.convertToWorldSpaceAR(cc.v2(0, 0));
+                this.gameCtrl.creatScore(worldpos, delay);
+                delay += 0.1;
+            }
+        }
+    }
+
+    /**
+     * 按列从下到上依次进行新棋子的补充
      * @param clearColMap 
      */
-    clear(clearColMap: Map<number, number[]>) {
-        // console.log('clear');
+    supply(clearColMap: Map<number, number[]> = this.clearColMap) {
+        // console.log('supply');
         this.state = CellState.Fall;
         for (let [col, cells] of clearColMap) {
             const endIndex = cells.at(-1);

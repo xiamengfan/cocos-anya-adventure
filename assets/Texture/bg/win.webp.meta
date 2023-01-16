@@ -12,7 +12,7 @@
   "height": 2113,
   "platformSettings": {},
   "subMetas": {
-    "155935_97582034746": {
+    "win": {
       "ver": "1.0.6",
       "uuid": "2c2c2e76-447c-4295-93a0-22ec509f9a13",
       "importer": "sprite-frame",

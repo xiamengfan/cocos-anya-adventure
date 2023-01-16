@@ -2,6 +2,7 @@ import { UITransitionConfig, UITransitionState } from './types';
 import StartCtrl from './ui/start/start';
 import GameCtrl from './ui/game/game';
 import EndCtrl from './ui/end/end';
+import WinCtrl from './ui/win/win';
 import ResourceCtrl from './resource';
 import AnimationCtrl from './animation';
 
@@ -19,6 +20,9 @@ export default class MainCtrl extends cc.Component {
     @property(EndCtrl)
     endCtrl: EndCtrl = null;
 
+    @property(WinCtrl)
+    winCtrl: WinCtrl = null;
+
     @property(ResourceCtrl)
     resourceCtrl: ResourceCtrl = null;
 
@@ -34,6 +38,9 @@ export default class MainCtrl extends cc.Component {
     @property(cc.Node)
     uiEnd: cc.Node = null;
 
+    @property(cc.Node)
+    uiWin: cc.Node = null;
+
     disabled = false;
 
     protected onLoad(): void {
@@ -41,11 +48,13 @@ export default class MainCtrl extends cc.Component {
         this.startCtrl.mainCtrl = this;
         this.gameCtrl.mainCtrl = this;
         this.endCtrl.mainCtrl = this;
+        this.winCtrl.mainCtrl = this;
 
         // init ui
         this.uiStart.active = true;
         this.uiGame.active = false;
         this.uiEnd.active = false;
+        this.uiWin.active = false;
     }
 
     gameStart(): void {
@@ -60,6 +69,21 @@ export default class MainCtrl extends cc.Component {
     gameEnd(): void {
         this.switchUI(this.uiEnd, { state: UITransitionState.Downwrad }, () => {
             this.uiGame.active = false;
+        });
+    }
+
+    gameWin(): void {
+        this.switchUI(this.uiWin, { state: UITransitionState.Downwrad }, () => {
+            this.uiGame.active = false;
+        });
+    }
+
+    gameNext() {
+        this.gameCtrl.initGame();
+        this.uiGame.active = true;
+        this.switchUI(this.uiWin, { state: UITransitionState.Upward }, () => {
+            this.uiWin.active = false;
+            this.gameCtrl.gameStart();
         });
     }
 

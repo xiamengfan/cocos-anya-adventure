@@ -20,6 +20,12 @@ export default class CellCtrl extends cc.Component {
     @property(cc.Sprite)
     icon: cc.Sprite = null;
 
+    @property(cc.Node)
+    normalNode: cc.Node = null;
+
+    @property(cc.Node)
+    clearNode: cc.Node = null;
+
     // 选中框
     @property(cc.Node)
     private nodeSelected: cc.Node = null;
@@ -65,6 +71,18 @@ export default class CellCtrl extends cc.Component {
     // 移动方向
     moveDirection: boolean = true;
 
+    // 总消除时间
+    clearTime = 0.3;
+
+    // 消除速度
+    clearSpeed = Math.ceil(255 / (this.clearTime / 0.016));
+    
+    colors = [
+        cc.color(255, 145, 145),
+        cc.color(0, 255, 255),
+        cc.color(255, 255, 0),
+    ];
+
     get disabled() {
         return this.boardCtrl.disabled;
     }
@@ -96,6 +114,8 @@ export default class CellCtrl extends cc.Component {
             this.node.active = false;
             return;
         }
+        this.normalNode.active = state !== CellState.Clear;
+        this.clearNode.active = state === CellState.Clear;
         this.node.active = true;
     }
 
@@ -107,6 +127,8 @@ export default class CellCtrl extends cc.Component {
     onClick() {
         this.boardCtrl.onCellClick(this);
     }
+
+    /** ready action */
 
     startFall(fallStartY: number) {
         this.node.y = fallStartY;
@@ -127,67 +149,100 @@ export default class CellCtrl extends cc.Component {
         this.setState(CellState.Swap);
     }
 
-    protected update(dt: number): void {
-        if (this.state === CellState.Fall) {
-            const tempY = this.node.y - this.fallSpeed;
-            if (tempY <= this.y) {
-                this.node.y = this.y;
-                this.setState(CellState.Normal);
-                this.boardCtrl.stopOneAction();
-            } else {
-                this.node.y = tempY;
-            }
-            return;
+    startClear() {
+        this.clearNode.opacity = 255;
+        this.clearNode.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        this.boardCtrl.startOneAction();
+        this.setState(CellState.Clear);
+    }
+
+    /** action every frame */
+
+    fall() {
+        const tempY = this.node.y - this.fallSpeed;
+        if (tempY <= this.y) {
+            this.node.y = this.y;
+            this.setState(CellState.Normal);
+            this.boardCtrl.stopOneAction();
+        } else {
+            this.node.y = tempY;
         }
-        if (this.state === CellState.Swap) {
-            const { x, y } = this.node;
-            const { x: x2, y: y2 } = this.swapEndPos;
-            let completed = false;
-            if (this.moveState === MoveState.Horizontal) {
-                if (this.moveDirection) {
-                    const tempX = x + this.swapSpeed;
-                    if (tempX >= x2) {
-                        this.node.x = x2;
-                        completed = true;
-                    } else {
-                        this.node.x = tempX;
-                    }
+    }
+
+    swap() {
+        const { x, y } = this.node;
+        const { x: x2, y: y2 } = this.swapEndPos;
+        let completed = false;
+        if (this.moveState === MoveState.Horizontal) {
+            if (this.moveDirection) {
+                const tempX = x + this.swapSpeed;
+                if (tempX >= x2) {
+                    this.node.x = x2;
+                    completed = true;
                 } else {
-                    const tempX = x - this.swapSpeed;
-                    if (tempX <= x2) {
-                        this.node.x = x2;
-                        completed = true;
-                    } else {
-                        this.node.x = tempX;
-                    }
+                    this.node.x = tempX;
                 }
-            } else if (this.moveState === MoveState.Vertical) {
-                if (this.moveDirection) {
-                    const tempY = y + this.swapSpeed;
-                    if (tempY >= y2) {
-                        this.node.y = y2;
-                        completed = true;
-                    } else {
-                        this.node.y = tempY;
-                    }
+            } else {
+                const tempX = x - this.swapSpeed;
+                if (tempX <= x2) {
+                    this.node.x = x2;
+                    completed = true;
                 } else {
-                    const tempY = y - this.swapSpeed;
-                    if (tempY <= y2) {
-                        this.node.y = y2;
-                        completed = true;
-                    } else {
-                        this.node.y = tempY;
-                    }
+                    this.node.x = tempX;
                 }
             }
-            if (completed) {
-                this.node.x = this.x;
-                this.node.y = this.y;
-                this.setId(this.swapId);
-                this.setState(CellState.Normal);
-                this.boardCtrl.stopOneAction();
+        } else if (this.moveState === MoveState.Vertical) {
+            if (this.moveDirection) {
+                const tempY = y + this.swapSpeed;
+                if (tempY >= y2) {
+                    this.node.y = y2;
+                    completed = true;
+                } else {
+                    this.node.y = tempY;
+                }
+            } else {
+                const tempY = y - this.swapSpeed;
+                if (tempY <= y2) {
+                    this.node.y = y2;
+                    completed = true;
+                } else {
+                    this.node.y = tempY;
+                }
             }
-            return;
+        }
+        if (completed) {
+            this.node.x = this.x;
+            this.node.y = this.y;
+            this.setId(this.swapId);
+            this.setState(CellState.Normal);
+            this.boardCtrl.stopOneAction();
+        }
+    }
+
+    clear() {
+        const opacity = this.clearNode.opacity - this.clearSpeed;
+        if (opacity <= 0) {
+            this.clearNode.opacity = 0;
+            this.setState(CellState.None);
+            this.boardCtrl.stopOneAction();
+        } else {
+            this.clearNode.opacity = opacity;
+        }
+    }
+
+    protected update(dt: number): void {
+        switch (this.state) {
+            case CellState.Fall:
+                this.fall();
+                break;
+            case CellState.Swap:
+                this.swap();
+                break;
+            case CellState.Clear:
+                this.clear();
+                break;
+            default:
+                //
         }
     }
 }

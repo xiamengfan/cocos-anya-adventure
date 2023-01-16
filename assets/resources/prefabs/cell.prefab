@@ -27,14 +27,14 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 11
+        "__id__": 16
       },
       {
-        "__id__": 12
+        "__id__": 17
       }
     ],
     "_prefab": {
-      "__id__": 13
+      "__id__": 18
     },
     "_opacity": 255,
     "_color": {
@@ -85,7 +85,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "selected",
+    "_name": "clear",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -110,8 +110,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 128,
-      "height": 128
+      "width": 118,
+      "height": 107
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -163,7 +163,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "dc4d5deb-5ad4-4359-a3fc-371650096ceb"
+      "__uuid__": "202479b2-6b6c-4fba-9c47-9be16d04d3e3"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -187,12 +187,12 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "89Zm/DkzVGirrBo9EIVaee",
+    "fileId": "dfuG45iN9Nd47iqles41wO",
     "sync": false
   },
   {
     "__type__": "cc.Node",
-    "_name": "mask",
+    "_name": "normal",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -200,16 +200,15 @@
     "_children": [
       {
         "__id__": 6
-      }
-    ],
-    "_active": true,
-    "_components": [
+      },
       {
         "__id__": 9
       }
     ],
+    "_active": true,
+    "_components": [],
     "_prefab": {
-      "__id__": 10
+      "__id__": 15
     },
     "_opacity": 255,
     "_color": {
@@ -221,8 +220,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 110,
-      "height": 110
+      "width": 0,
+      "height": 0
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -260,7 +259,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "anya01",
+    "_name": "selected",
     "_objFlags": 0,
     "_parent": {
       "__id__": 5
@@ -338,6 +337,181 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
+      "__uuid__": "dc4d5deb-5ad4-4359-a3fc-371650096ceb"
+    },
+    "_type": 0,
+    "_sizeMode": 1,
+    "_fillType": 0,
+    "_fillCenter": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "_fillStart": 0,
+    "_fillRange": 0,
+    "_isTrimmedMode": true,
+    "_atlas": null,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 1
+    },
+    "asset": {
+      "__id__": 0
+    },
+    "fileId": "72M0DGlDNA/a73/wpgc0OZ",
+    "sync": false
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "mask",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 5
+    },
+    "_children": [
+      {
+        "__id__": 10
+      }
+    ],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 13
+      }
+    ],
+    "_prefab": {
+      "__id__": 14
+    },
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 110,
+      "height": 110
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "anya01",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 9
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 11
+      }
+    ],
+    "_prefab": {
+      "__id__": 12
+    },
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 128,
+      "height": 128
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.Sprite",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 10
+    },
+    "_enabled": true,
+    "_materials": [
+      {
+        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
+      }
+    ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
+    "_spriteFrame": {
       "__uuid__": "76f2187c-bb2f-4012-84e4-af580d3d354b"
     },
     "_type": 0,
@@ -362,7 +536,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "0csvgJ1TNJQYm5KyVF0WIn",
+    "fileId": "b8TjmQAhRF14UoI4g+hVZ1",
     "sync": false
   },
   {
@@ -370,7 +544,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 5
+      "__id__": 9
     },
     "_enabled": true,
     "_materials": [
@@ -393,7 +567,18 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "6dDryTDH9MvKI+SvuZ6H10",
+    "fileId": "faHRULfyJDXp8AYhfOLNZE",
+    "sync": false
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 1
+    },
+    "asset": {
+      "__id__": 0
+    },
+    "fileId": "8cBpQTr5RPG6Rz7jgoPM2n",
     "sync": false
   },
   {
@@ -437,10 +622,16 @@
     },
     "_enabled": true,
     "icon": {
-      "__id__": 7
+      "__id__": 11
+    },
+    "normalNode": {
+      "__id__": 5
+    },
+    "clearNode": {
+      "__id__": 2
     },
     "nodeSelected": {
-      "__id__": 2
+      "__id__": 6
     },
     "_id": ""
   },
